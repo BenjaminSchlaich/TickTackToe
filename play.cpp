@@ -32,9 +32,7 @@ int main()
 
     while(true)
     {
-        // clearScreen();
-
-        cout << "Status of the game:" << endl << g << endl; 
+        cout << g << endl; 
 
         if(g.getStatus() != NEUTRAL)
             break;
@@ -47,12 +45,12 @@ int main()
         int m = human.selectMove(g);
 
         g.makeMove(m);
-
+        
         m = com.selectMove(g);
 
         g.makeMove(m);
-
-        goUpLines(11);
+        
+        goUpLines(9);
     }
 
     cout << endl << "Player " << g.getStatus() << " won the game." << endl;

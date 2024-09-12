@@ -25,7 +25,7 @@ class Game
     Game();
 
     // returns a list of moves that can be made.
-    std::vector<int> getMoves();
+    const std::vector<int> &getMoves();
 
     // returns whether the game is running or cross/circle won.
     STATUS getStatus();
@@ -41,9 +41,10 @@ class Game
 
     private:
 
-    int count;
     char field[9];
-    int moves[9];
+
+    std::vector<int> possibleMoves;
+    std::vector<int> history;
 };
 
 std::ostream &operator<<(std::ostream &os, STATUS s);

@@ -1,11 +1,9 @@
 
 #include "ticktacktoe.hpp"
+#include "util.hpp"
 
 #include <codecvt>
 #include <locale>
-
-#define MAGENTA "\u001b[35m"
-#define RESET_COLOR "\u001b[0m"
 
 #define LOOP_FIELD for(int i=0; i<9; i++)
 
@@ -48,23 +46,16 @@ std::string wide_to_utf8(const std::wstring& wstr) {
 Game::Game()
 {
     LOOP_FIELD
-    {
         field[i] = NEUTRAL;
-        moves[i] = -1;
-    }
 
-    count = 0;
+    possibleMoves = {0, 1, 2, 3 ,4, 5 ,6, 7, 8};
+
+    history = std::vector<int>();
 }
 
-std::vector<int> Game::getMoves()
+const std::vector<int> &Game::getMoves()
 {
-    auto mvs = std::vector<int>();
-
-    LOOP_FIELD
-        if(field[i] == NEUTRAL)
-            mvs.push_back(i);
-
-    return mvs;
+    return possibleMoves;
 }
 
 STATUS Game::getStatus()
@@ -108,22 +99,27 @@ STATUS Game::getStatus()
 
 STATUS Game::getTurn()
 {
-    return (count % 2 == 0) ? CROSS : CIRCLE;
+    return (history.size() % 2 == 0) ? CROSS : CIRCLE;
 }
 
 void Game::makeMove(int moveIndex)
 {
-    auto m = getMoves().at(moveIndex);
+    int m = possibleMoves.at(moveIndex);
+    possibleMoves.erase(possibleMoves.begin() + moveIndex);
 
-    field[m] = (count % 2 == 0) ? CROSS : CIRCLE;
-    moves[count++] = m;
+    field[m] = getTurn();
+
+    history.push_back(m);
 }
 
 void Game::undoMove()
 {
-    int m = moves[--count];
-    moves[count] = -1;
+    int m = history.back();
+    history.pop_back();
+
     field[m] = NEUTRAL;
+
+    possibleMoves.push_back(m);
 }
 
 std::ostream &operator<<(std::ostream &os, STATUS s)

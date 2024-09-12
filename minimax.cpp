@@ -15,7 +15,11 @@ int minimax(Game &g, STATUS max, int move = -1)
     auto mvs = g.getMoves();
 
     if(mvs.size() == 0)
+    {
+        g.undoMove();
+
         return  0;
+    }
     
     bool isMaxTurn = g.getTurn() == max;
     
@@ -24,7 +28,7 @@ int minimax(Game &g, STATUS max, int move = -1)
 
     for(int i=0; i<mvs.size(); i++)
     {
-        int value = minimax(g, (STATUS) (3 -  max), i);
+        int value = minimax(g, max, i);
 
         if((isMaxTurn && value > best) || (!isMaxTurn && value < best))
         {
