@@ -16,13 +16,46 @@ void clearScreen()
     cout << "\x1b[2J";
 }
 
-/**
- * compile:
- * src="play.cpp agent.cpp minimax.cpp ticktacktoe.cpp"
- * opt="-std=c++2b -Wall -Werror -ferror-limit=1"
- * build="clang++ $opt $src"
- */
-int main()
+bool printAndCheck(Game &g)
+{
+    goUpLines(9);
+
+    cout << g << endl; 
+
+    if(g.getStatus() != NEUTRAL)
+    {
+        cout << endl << "Player " << g.getStatus() << " won the game." << endl;
+        return false;
+    }
+    else if(g.getMoves().empty())
+    {
+        cout << "There are no more moves left. It's a tie!" << endl;
+        return false;
+    }
+    else
+        return true;
+}
+
+void playHumanVSHuman()
+{
+    Game g;
+
+    Human human;
+
+    while(true)
+    {
+        if(!printAndCheck(g))
+            return;
+
+        int m = human.selectMove(g);
+
+        g.makeMove(m);
+        
+        goUpLines(9);
+    }
+}
+
+void playHumanVSCom(bool startHuman = true)
 {
     Game g;
 
@@ -30,30 +63,53 @@ int main()
 
     PerfectPlayer com;
 
+    int m;
+
     while(true)
     {
-        cout << g << endl; 
+        if(!printAndCheck(g))
+            return;
 
-        if(g.getStatus() != NEUTRAL)
-            break;
-        else if(g.getMoves().empty())
-        {
-            cout << "There are no more moves left. It's a tie!" << endl;
-            return 0;
-        }
-
-        int m = human.selectMove(g);
+        if(startHuman)
+            m = human.selectMove(g);
+        else
+            m = com.selectMove(g);
 
         g.makeMove(m);
         
-        m = com.selectMove(g);
+        if(!printAndCheck(g))
+            return;
+
+        if(startHuman)
+            m = com.selectMove(g);
+        else
+            m = human.selectMove(g);
 
         g.makeMove(m);
-        
-        goUpLines(9);
     }
+}
 
-    cout << endl << "Player " << g.getStatus() << " won the game." << endl;
+/**
+ * compile:
+ * src="play.cpp agent.cpp minimax.cpp ticktacktoe.cpp"
+ * opt="-std=c++2b -Wall -Werror -ferror-limit=1 -o ticktacktoe"
+ * build="clang++ $opt $src"
+ */
+int main(int argc, char *argv[])
+{
+    srand(time(nullptr));
 
-    return 0;
+    char c = argv[1][0];
+
+    switch(c)
+    {
+        case '0':
+            playHumanVSCom();
+            break;
+        case '1':
+            playHumanVSCom(false);
+            break;
+        default:
+            playHumanVSHuman();
+    }
 }

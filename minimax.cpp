@@ -1,49 +1,53 @@
 
 #include "minimax.hpp"
 
+#include <random>
+
 // first int: the index of the move. second int: the value of the move. max: the player to be maximised
-int minimax(Game &g, STATUS max, int move = -1)
+int minimax(Game &g, STATUS max, bool start = true)
 {
-    if(move >= 0)
+    STATUS status = g.getStatus();
+
+    if(status != NEUTRAL)
+        return status == max ? 1 : -1;
+
+    auto moves = g.getMoves();
+
+    if(moves.empty())
+        return 0;
+
+    bool maxNow = g.getTurn() == max;
+
+    int best = maxNow ? -1 : 1;
+    int bestMove = 0;
+
+    int k = 1;
+
+    for(int move: moves)
+    {
         g.makeMove(move);
 
-    STATUS s = g.getStatus();
+        int value = minimax(g, max, false);
 
-    if(s != NEUTRAL)
-        return s == max ? 1 : -1;
-
-    auto mvs = g.getMoves();
-
-    if(mvs.size() == 0)
-    {
         g.undoMove();
 
-        return  0;
-    }
-    
-    bool isMaxTurn = g.getTurn() == max;
-    
-    int best = isMaxTurn ? -1 : 1;
-    int mv = -1;
-
-    for(int i=0; i<mvs.size(); i++)
-    {
-        int value = minimax(g, max, i);
-
-        if((isMaxTurn && value > best) || (!isMaxTurn && value < best))
+        if((maxNow && value > best) || (!maxNow && value < best))
         {
             best = value;
-            mv = i;
+            bestMove = move;
+        }
+
+        if(((maxNow && value == best) || (!maxNow && value < best)) && (rand() % k++ == 0))
+        {
+            best = value;
+            bestMove = move;
         }
     }
 
-    if(move >= 0)
-    {
-        g.undoMove();
-        return best;
-    }
+    if(start)
+        return bestMove;
     else
-        return mv;
+        return best;
 }
 
 int minimaxMove(Game &g)

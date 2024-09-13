@@ -102,10 +102,10 @@ STATUS Game::getTurn()
     return (history.size() % 2 == 0) ? CROSS : CIRCLE;
 }
 
-void Game::makeMove(int moveIndex)
+void Game::makeMove(int m)
 {
-    int m = possibleMoves.at(moveIndex);
-    possibleMoves.erase(possibleMoves.begin() + moveIndex);
+    auto it = std::find(possibleMoves.begin(), possibleMoves.end(), m);
+    possibleMoves.erase(it);
 
     field[m] = getTurn();
 
@@ -144,8 +144,6 @@ std::ostream &operator<<(std::ostream &os, Game &g)
 {
     os << wide_to_utf8(CORNER_LT) << wide_to_utf8(HORIZONTAL) << wide_to_utf8(HORIZONTAL_DOWN) << wide_to_utf8(HORIZONTAL) << wide_to_utf8(HORIZONTAL_DOWN) << wide_to_utf8(HORIZONTAL) << wide_to_utf8(CORNER_RT) << std::endl;
     
-    int countEmpty = 0;
-
     for(int i=0; i<3; i++)
     {
         for(int j=0; j<3; j++)
@@ -155,7 +153,7 @@ std::ostream &operator<<(std::ostream &os, Game &g)
             if(g.field[3*i+j] != NEUTRAL)
                 os << (STATUS) g.field[3*i + j];
             else
-                os << MAGENTA << countEmpty++ << RESET_COLOR;
+                os << MAGENTA << (3*i + j) << RESET_COLOR;
         }
         
         os << wide_to_utf8(VERTICAL) << std::endl;
