@@ -14,6 +14,7 @@ void goUpLines(int lines)
 void clearScreen()
 {
     cout << "\x1b[2J";
+    goUpLines(100);
 }
 
 bool printAndCheck(Game &g)
@@ -89,11 +90,80 @@ void playHumanVSCom(bool startHuman = true)
     }
 }
 
+void playHumanVSQL(bool startHuman = true)
+{
+    Game g;
+
+    Human human;
+
+    QLearningAgent com;
+
+    int m;
+
+    while(true)
+    {
+        if(!printAndCheck(g))
+            return;
+
+        if(startHuman)
+            m = human.selectMove(g);
+        else
+            m = com.selectMove(g);
+
+        g.makeMove(m);
+        
+        if(!printAndCheck(g))
+            return;
+
+        if(startHuman)
+            m = com.selectMove(g);
+        else
+            m = human.selectMove(g);
+
+        g.makeMove(m);
+    }
+}
+
+void playHumanVSRandom(bool startHuman = true)
+{
+    Game g;
+
+    Human human;
+
+    RandomPlayer com;
+
+    int m;
+
+    while(true)
+    {
+        if(!printAndCheck(g))
+            return;
+
+        if(startHuman)
+            m = human.selectMove(g);
+        else
+            m = com.selectMove(g);
+
+        g.makeMove(m);
+        
+        if(!printAndCheck(g))
+            return;
+
+        if(startHuman)
+            m = com.selectMove(g);
+        else
+            m = human.selectMove(g);
+
+        g.makeMove(m);
+    }
+}
+
 /**
  * compile:
  * src="play.cpp agent.cpp minimax.cpp ticktacktoe.cpp"
- * opt="-std=c++2b -Wall -Werror -ferror-limit=1 -o ticktacktoe"
- * build="clang++ $opt $src"
+ * inc="-I/Users/benjaminschlaich/Coding/C++/Libraries/AI-Toolbox-master/include -I/Users/benjaminschlaich/Coding/C++/Libraries/eigen-3.4.0 -L/Users/benjaminschlaich/Coding/C++/Libraries/AI-Toolbox-master/build"
+ * opt="-std=c++2b -Wall -ferror-limit=1 -lAIToolboxMDP -o ticktacktoe"
+ * build="clang++ $opt $inc $src"
  */
 int main(int argc, char *argv[])
 {
@@ -101,15 +171,34 @@ int main(int argc, char *argv[])
 
     char c = argv[1][0];
 
-    switch(c)
+    while(true)
     {
-        case '0':
-            playHumanVSCom();
-            break;
-        case '1':
-            playHumanVSCom(false);
-            break;
-        default:
-            playHumanVSHuman();
+        clearScreen();
+
+        switch(c)
+        {
+            case '0':
+                playHumanVSHuman();
+                break;
+            case '1':
+                playHumanVSCom();
+                break;
+            case '2':
+                playHumanVSCom(false);
+                break;
+            case '3':
+                playHumanVSQL(false);
+                break;
+            case '4':
+                playHumanVSRandom();
+            default:
+                return 0;
+        }
+
+        cout << "press any key to continue playing..." << endl;
+
+        char c;
+
+        cin >> c;
     }
 }

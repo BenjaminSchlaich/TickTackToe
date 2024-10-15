@@ -19,6 +19,7 @@ enum STATUS
 class Game
 {
     friend std::ostream &operator<<(std::ostream &os, Game &g);
+    friend int gameToState(const Game &g);
 
     public:
 
@@ -50,3 +51,5 @@ class Game
 std::ostream &operator<<(std::ostream &os, STATUS s);
 
 std::ostream &operator<<(std::ostream &os, Game &g);
+
+int gameToState(const Game &g);

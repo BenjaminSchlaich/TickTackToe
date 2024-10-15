@@ -5,6 +5,8 @@
 #include <codecvt>
 #include <locale>
 
+#include <functional>
+
 #define LOOP_FIELD for(int i=0; i<9; i++)
 
 const std::wstring HORIZONTAL =  L"━";
@@ -165,4 +167,16 @@ std::ostream &operator<<(std::ostream &os, Game &g)
     os << wide_to_utf8(CORNER_LB) << wide_to_utf8(HORIZONTAL) << wide_to_utf8(HORIZONTAL_UP) << wide_to_utf8(HORIZONTAL) << wide_to_utf8(HORIZONTAL_UP) << wide_to_utf8(HORIZONTAL) << wide_to_utf8(CORNER_RB);
 
     return os;
+}
+
+int gameToState(const Game &g)
+{
+    int id = 0;
+
+    std::function<int(int, int)> pow = [&pow](int b, int e) {if(e > 0) return b * pow(b, e-1); else return 1;};
+
+    for(int i=0; i<9; i++)
+        id += g.field[i] * pow(3, i);
+    
+    return id;
 }
